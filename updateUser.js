@@ -1,0 +1,1 @@
+const updateUser = {template: `<h1> this is updateUser page`}

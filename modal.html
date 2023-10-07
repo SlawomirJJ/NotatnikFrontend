@@ -1,0 +1,18 @@
+<!-- Modal -->
+<div class="modal-body">
+    
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <!-- Formularz do wprowadzenia danych użytkownika -->
+      <form @submit.prevent="createUser">
+        <!-- Pola formularza (Imię, Nazwisko, itp.) -->
+        <!-- Przykład: -->
+        <input type="text" v-model="newUser.FirstName" placeholder="Imię">
+        <input type="text" v-model="newUser.LastName" placeholder="Nazwisko">
+        <!-- Dodaj pozostałe pola formularza -->
+
+        <button type="submit">Dodaj</button>
+      </form>
+    </div>
+    <button class="modal-close is-large" aria-label="close" @click="closeModal"></button>
+  </div>
