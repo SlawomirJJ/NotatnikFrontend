@@ -1,13 +1,12 @@
 const main = {template: `
 <div>
 <button type="button" class="btn btn-primary m-2 fload-end" @click="generatePDF()"> Generate report PDF </button>
-<!-- Przycisk do wywołania modalu -->
 <button type="button"
  class="btn btn-primary m-2 fload-end"
 data-bs-toggle="modal"
 data-bs-target="#exampleModal"
 @click="addClick()">
-Dodaj użytkownika
+Add user
 </button>
 
 <table class="table table-striped">
@@ -25,6 +24,9 @@ Dodaj użytkownika
         <th>
             Gender
         </th>
+        <th>
+            Additional Attributes
+        </th>
     </tr>
 </thead>
 <tbody>
@@ -33,6 +35,14 @@ Dodaj użytkownika
         <td>{{dep.lastName}}</td>
         <td>{{dep.birthDate}}</td>
         <td>{{dep.gender}}</td>
+        <td>
+            <!-- Wyświetl dodatkowe atrybuty jako listę -->
+            <ul>
+                <li v-for="attr in dep.additionalAttributes">
+                    {{ attr.attributeName }}: {{ attr.value }}
+                </li>
+            </ul>
+        </td>
         <td>
             <button type="button"
                 class="btn btn-light mr-1"
@@ -138,6 +148,7 @@ Dodaj użytkownika
 data(){
     return{
         users:[],
+
         modalTitle:"",
         firstName:"",
         lastName:"",
@@ -154,7 +165,7 @@ mounted() {
   methods: {
     async refreshData() {
       try {
-        const response = await axios.get('https://localhost:7160/User/GetAllUsers');
+        const response = await axios.get(variables.API_URL + '/User/GetAllUsers');
         this.users = response.data;
         console.log('Dane użytkowników:', this.users);
       } catch (error) {
@@ -175,9 +186,8 @@ mounted() {
         this.birthDate=user.birthDate;
         this.gender=user.gender;
 
-        // Pobieramy ID użytkownika na podstawie jego danych osobowych
         axios
-          .get('https://localhost:7160/User/GetUserId', {
+          .get(variables.API_URL + '/User/GetUserId', {
             params: {
               firstName: user.firstName,
               lastName: user.lastName,
@@ -186,25 +196,22 @@ mounted() {
             },
           })
           .then((response) => {
-            this.userId = response.data; // Odczytujemy ID użytkownika z odpowiedzi
+            this.userId = response.data;
           })
     },
     updateClick() {
-                   
-            // Przygotowujemy dane do aktualizacji
             const updatedUser = {
-              id: this.userId, // Id użytkownika do aktualizacji
-              firstName: this.firstName, // Nowe dane użytkownika
+              id: this.userId,
+              firstName: this.firstName,
               lastName: this.lastName,
               birthDate: this.birthDate,
               gender: this.gender,
             };
       
-            // Wysyłamy żądanie aktualizacji użytkownika
             axios
-              .put('https://localhost:7160/User/UpdateUser/', updatedUser)
+              .put(variables.API_URL + '/User/UpdateUser', updatedUser)
               .then((updateResponse) => {
-                this.refreshData(); // Odświeżamy dane po aktualizacji
+                this.refreshData();
                 alert(updateResponse.data);
               })
               .catch((updateError) => {
@@ -221,7 +228,7 @@ mounted() {
             gender: this.gender
         };
     
-        let result = axios.post('https://localhost:7160/User/CreateUser', requestData)
+        let result = axios.post( variables.API_URL+ '/User/CreateUser', requestData)
             .then((result) => {
                 alert(result.data);
                 this.refreshData();
@@ -230,10 +237,9 @@ mounted() {
             console.log("2 function createClick is called", this.firstName,this.lastName,this.birthDate,this.gender)
     },
     deleteClick(user) {
-        // Pierwsze, pobieramy ID użytkownika na podstawie jego danych osobowych
         axios
           .get(
-            'https://localhost:7160/User/GetUserId',
+            variables.API_URL + '/User/GetUserId',
             {
               params: {
                 firstName: user.firstName,
@@ -244,11 +250,10 @@ mounted() {
             }
           )
           .then((response) => {
-            const userId = response.data; // Odczytujemy ID użytkownika z odpowiedzi
+            const userId = response.data; 
       
-            // Następnie usuwamy użytkownika, korzystając z pobranego ID
             axios
-            .delete(`https://localhost:7160/User/DeleteUser/${userId}`)
+            .delete(variables.API_URL + `/User/DeleteUser/${userId}`)
               .then((deleteResponse) => {
                 this.refreshData();
                 alert(deleteResponse.data);
@@ -262,15 +267,12 @@ mounted() {
           });
     },
     generatePDF()  {
-        // Tworzymy tymczasowy link do pliku PDF
-  const url = 'https://localhost:7160/User/GenerateReport'; // Zmień na prawidłowy adres URL
+  const url = variables.API_URL + '/User/GenerateReport'; 
 
-  // Tworzymy element <a> i ustawiamy atrybuty
   const link = document.createElement('a');
   link.href = url;
-  link.target = '_blank'; // Otwiera link w nowym oknie
+  link.target = '_blank';
 
-  // Klikamy na link, co spowoduje otwarcie pliku PDF w nowym oknie przeglądarki
   link.click();
 
   },

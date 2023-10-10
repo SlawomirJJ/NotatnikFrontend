@@ -1,7 +1,5 @@
 const routes =[
     {path:'/main',component:main},
-    {path:'/addUser',component:addUser},
-    {path:'/updateUser',component:updateUser}
 ]
 
 const router = VueRouter.createRouter({
